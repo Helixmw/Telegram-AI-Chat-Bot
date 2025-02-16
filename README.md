@@ -10,7 +10,7 @@
     - [User Responses](#user-responses)
 
 ## Introduction
-This is a Telegram bot created utilizing the Telegram Bot Library in order to communicate with Telegram users. The bot is integrated with an OpenAI .NET API implementation to create a custom AI Chat Assistant that serves it's users.
+This is a Telegram bot created utilizing the Telegram Bot Library in order to communicate with Telegram users. The bot is integrated with an OpenAI .NET API implementation to create a custom AI Chat Assistant that serves it's users. Your contributions are welcome.
 
 ## Service Classes
 The bot comprises of an ```AIChatClient``` service which derives from the ```AIClient``` base service, and also has a ```TelegramBotProcessor``` class that invokes methods from the ```AIChatClient```.
