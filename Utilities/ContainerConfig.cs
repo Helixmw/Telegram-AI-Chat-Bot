@@ -30,7 +30,7 @@ public static class ContainerConfig
             (pi, ctx) => configuration.GetSection("GptVersions:Chat").Value);
         builder.RegisterType<AIVoiceChatClient>().WithParameter(
             (pi, ctx) => pi.ParameterType == typeof(string),
-            (pi, ctx) => configuration.GetSection("GptVersions:Chat").Value
+            (pi, ctx) => configuration.GetSection("GptVersions:Voice").Value
             );
         builder.RegisterType<TelegramBotProcessor>();
         return builder.Build();
