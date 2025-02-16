@@ -16,8 +16,6 @@ public class Program
 
     public static void Main(string[] args)
     {
-        //Configure App Settings
-        SettingsConfiguration.Configure();
 
         var conf = new AppConfigurations();
         //Resolve services in container
