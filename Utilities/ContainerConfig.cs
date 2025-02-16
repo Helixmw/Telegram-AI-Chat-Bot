@@ -19,10 +19,19 @@ public static class ContainerConfig
      
         var builder = new ContainerBuilder();
         builder.RegisterType<TelegramBotClient>()
-            .WithParameters(new TypedParameter(typeof(string), configuration.GetSection("ApiKeys:TelegramKey").Value),
-            new TypedParameter(typeof(CancellationToken), CancellationToken.None));
-        builder.RegisterType<AIChatClient>().WithParameter(new TypedParameter(typeof(string), configuration.GetSection("GptVersions:gpt-4o-mini").Value));
-        builder.RegisterType<AIVoiceChatClient>().WithParameter(new TypedParameter(typeof(string), configuration.GetSection("GptVersions:gpt-4o-mini").Value));
+            .WithParameter(
+        (pi, ctx) => pi.ParameterType == typeof(string),
+        (pi, ctx) => configuration.GetSection("ApiKeys:TelegramKey").Value)
+        .WithParameter(
+        (pi, ctx) => pi.ParameterType == typeof(CancellationToken),
+        (pi, ctx) => CancellationToken.None);
+        builder.RegisterType<AIChatClient>().WithParameter(
+            (pi, ctx) => pi.ParameterType == typeof(string),
+            (pi, ctx) => configuration.GetSection("GptVersions:Chat").Value);
+        builder.RegisterType<AIVoiceChatClient>().WithParameter(
+            (pi, ctx) => pi.ParameterType == typeof(string),
+            (pi, ctx) => configuration.GetSection("GptVersions:Chat").Value
+            );
         builder.RegisterType<TelegramBotProcessor>();
         return builder.Build();
     }
