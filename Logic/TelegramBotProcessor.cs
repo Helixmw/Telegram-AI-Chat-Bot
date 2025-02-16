@@ -65,7 +65,6 @@ public class TelegramBotProcessor : BaseProcessor
     //Handles message updates from the user and responds
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-
         switch (update.Message?.Type)
         {
             case MessageType.Text:
@@ -75,7 +74,6 @@ public class TelegramBotProcessor : BaseProcessor
                     var msg = update.Message.Text.Trim();
                     try
                     {
-
                         await botClient.SendChatAction(update.Message.Chat.Id, ChatAction.Typing);
                         var message = await aIChatClient.SendRequest(msg);
                         await botClient.SendMessage(update.Message.Chat.Id, message);
@@ -103,7 +101,6 @@ public class TelegramBotProcessor : BaseProcessor
                 }
             break;
             default:
-
                 if(update.Message is not null)
                 {
                     chatId = update.Message.Chat.Id;
@@ -123,9 +120,7 @@ public class TelegramBotProcessor : BaseProcessor
                         await HandleErrorAsync(botClient, botError, cancellationToken);
                  
                 }
-            break;
-              
-            
+            break;     
         }
     }
 
