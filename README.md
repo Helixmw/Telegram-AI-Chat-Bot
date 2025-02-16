@@ -1,7 +1,6 @@
 # Telegram AI Chat Bot
 
 ## Table of Contents
-- [Project Title](#-project-title)
 - [Introduction](#introduction)
 - [Service Classes](#service-classes)
 - [Usage](#usage)
