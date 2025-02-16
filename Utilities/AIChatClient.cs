@@ -6,6 +6,7 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using MWBotApp.Exceptions;
 using OpenAI.Chat;
 using Telegram.Bot.Types;
 
@@ -19,112 +20,107 @@ public class AIChatClient : AIClient
         base.SetAudioClient();
     }
 
-    //Sends message sent by user
+    //Sends message to the bot and gets response
     public async Task<string> SendRequest(string message)
     {
-
-        if (message.Trim() == "/start")
+        try
         {
-            var msg = await greetingMessage();
-            return msg;
-        }
-        else
-        {
-
-            var messageText = string.Empty;
-
-            await Task.Run(async () =>
+            if (message.Trim() == "/start")
             {
-
-                //Adds User's message
-                messages.Add(new UserChatMessage(message));
-
-                /*--Start processing response--*/
-
-
-                completionUpdates = chatClient.CompleteChatStreamingAsync(messages);
-
-                await foreach (StreamingChatCompletionUpdate completionUpdate in completionUpdates)
+                var msg = await greetingMessage();
+                return msg;
+            }
+            else
+            {
+                var messageText = string.Empty;
+                await Task.Run(async () =>
                 {
-                    if (completionUpdate.ContentUpdate.Count > 0)
+                    //Adds User's message
+                    messages.Add(new UserChatMessage(message));
+                    /*--Start processing response--*/
+                    completionUpdates = chatClient.CompleteChatStreamingAsync(messages);
+
+                    await foreach (StreamingChatCompletionUpdate completionUpdate in completionUpdates)
                     {
-
-                        messageText += completionUpdate.ContentUpdate[0].Text;
-
+                        if (completionUpdate.ContentUpdate.Count > 0)
+                        {
+                            messageText += completionUpdate.ContentUpdate[0].Text;
+                        }
                     }
-                }
+                    //Add sent message by assistant to messages
+                    messages.Add(new AssistantChatMessage(messageText));
+                });
 
-                //Add sent message by assistant to messages
-                messages.Add(new AssistantChatMessage(messageText));
-            });
-
-            return messageText;
+                return messageText;
+            }
+        }
+        catch (Exception)
+        {
+            throw new TelegramBotException(ErrorMessage);
         }
     }
 
-    //Sends voice request and gets text response
+    //Sends voice note and gets response
     public async Task<string> SendVoiceRequest(byte[] file)
     {
-
-     var messageText = string.Empty;
-        if (file is not null)
+        try
         {
-
-            if (audioClient is not null)
-            {    
-                
-                var byteArrayContent = new ByteArrayContent(file);
-                byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("audio/mp3");
+            var messageText = string.Empty;
+            if (file is not null)
+            {
+                if (audioClient is not null)
+                {
+                    var byteArrayContent = new ByteArrayContent(file);
+                    byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("audio/mp3");
                     var transcription = await audioClient.TranscribeAudioAsync(byteArrayContent?.Headers?.ContentLocation?.OriginalString);
                     messages.Add(new UserChatMessage(transcription.Value.Text));
-                    if(chatClient is not null)
+                    if (chatClient is not null)
                     {
-
                         completionUpdates = chatClient.CompleteChatStreamingAsync(messages);
                         await foreach (StreamingChatCompletionUpdate completionUpdate in completionUpdates)
                         {
                             if (completionUpdate.ContentUpdate.Count > 0)
                             {
-
                                 messageText += completionUpdate.ContentUpdate[0].Text;
-
                             }
-                        }       
+                        }
                     }
-
+                }
             }
+            return messageText;
         }
-        return messageText;
+        catch (Exception)
+        {
+            throw new TelegramBotException(ErrorMessage);
+        }
     }
 
     public async Task<string> greetingMessage()
     {
-        var messageText = string.Empty;
-
-        await Task.Run(async () =>
+        try
         {
-            //Add system prompt message
-            messages.Add(new SystemChatMessage(systemPromptMessage));
-
-            /*--Start processing response--*/
-
-            completionUpdates = chatClient.CompleteChatStreamingAsync(messages);
-
-            await foreach (StreamingChatCompletionUpdate completionUpdate in completionUpdates)
+            var messageText = string.Empty;
+            await Task.Run(async () =>
             {
-                if (completionUpdate.ContentUpdate.Count > 0)
+                //Add system prompt message
+                messages.Add(new SystemChatMessage(systemPromptMessage));
+                /*--Start processing response--*/
+                completionUpdates = chatClient.CompleteChatStreamingAsync(messages);
+                await foreach (StreamingChatCompletionUpdate completionUpdate in completionUpdates)
                 {
-                   
-                        messageText  += completionUpdate.ContentUpdate[0].Text;
-                   
+                    if (completionUpdate.ContentUpdate.Count > 0)
+                    {
+                        messageText += completionUpdate.ContentUpdate[0].Text;
+                    }
                 }
-            }
-
-
-            //Add sent message by assistant to messages
-            messages.Add(new AssistantChatMessage(messageText));
-        });
-
-        return messageText;
+                //Add sent message by assistant to messages
+                messages.Add(new AssistantChatMessage(messageText));
+            });
+            return messageText;
+        }
+        catch (Exception)
+        {
+            throw new TelegramBotException(ErrorMessage);
+        }
     }
 }

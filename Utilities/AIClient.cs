@@ -11,6 +11,8 @@ using OpenAI.Audio;
 using OpenAI.Chat;
 
 namespace MWBotApp.Utilities;
+
+//Base class for all AI related tasks (Chat, Voice etc.)
 public abstract class AIClient
 {
     
@@ -23,14 +25,15 @@ public abstract class AIClient
     protected AudioClient? audioClient;
     protected readonly List<ChatMessage> messages = new();
     protected AsyncCollectionResult<StreamingChatCompletionUpdate>? completionUpdates;
+    protected readonly string ErrorMessage;
     
-    //ChatTools
+    //ChatTools used in MessageCompletion by the API
     protected static readonly ChatTool getCurrentLocationTool = ChatTool.CreateFunctionTool(
             functionName: nameof(AIChatTools.GiveLocation),
             functionDescription: "Get's the users current location"
         );
 
-    //Set Completion options with tools
+    //Set Completion options with the tools to be used in the Message Completion
     protected readonly ChatCompletionOptions chatCompletionOptions = new()
     {
         Tools = { getCurrentLocationTool }
@@ -39,7 +42,10 @@ public abstract class AIClient
     protected AIClient(string model)
     {
         _configuration = SetConfigurationBuilder();
+        ErrorMessage = _configuration.GetSection("Administrator:DefaultErrorMessage").Value ?? "Something went wrong. Please try again later";
+        //Gets OpenAI API Key
         apiKey = _configuration.GetSection("ApiKeys:OpenAIKey").Value ?? string.Empty;
+        //System Prompt that tells the AI what its tasks are
         systemPromptMessage = _configuration.GetSection("AISystemPrompt").Value ?? string.Empty;
         this.model = model;
  
@@ -50,10 +56,13 @@ public abstract class AIClient
       return new ConfigurationBuilder().AddUserSecrets<AIClient>().Build();
     }
 
+    /*Set up chat client and voice clients*/
+
     protected void SetChatClient()
     {
         chatClient = new(model, apiKey);
     }
+
 
     protected void SetAudioClient()
     {
