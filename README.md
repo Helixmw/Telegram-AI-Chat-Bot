@@ -1,4 +1,4 @@
-# Telegram API Chat Bot
+# Telegram AI Chat Bot
 
 ## Table of Contents
 - [Project Title](#-project-title)
