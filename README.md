@@ -1,3 +1,3 @@
 # TTelegram API Chat Bot
 
-This is a Telegram Bot created by utilizing thr Telegram Bot Library in order to communicate with bot users. The Bot is integrated with an Implementation of the OpenAI .NET API to generate s custom made AI Chat Assistant that serves users.
+This is a Telegram bot created utilizing Telegram Bot Library in order to communicate with bot users. The bot is integrated with an OpenAI .NET API implementation to create a custom AI Chat Assistant that serves its users.
