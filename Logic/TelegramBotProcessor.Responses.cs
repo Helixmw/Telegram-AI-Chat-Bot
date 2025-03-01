@@ -38,7 +38,7 @@ namespace MWBotApp.Logic
                         }
                         catch (TelegramBotException ex)
                         {
-                            await HandleErrorAsync(parameters.BotClient, ex, parameters.CancellationToken);
+                            HandleErrorAsync(parameters.BotClient, ex, parameters.CancellationToken);
                         }
                     }
                     break;
@@ -54,7 +54,7 @@ namespace MWBotApp.Logic
                         }
                         catch (TelegramBotException ex)
                         {
-                            await HandleErrorAsync(parameters.BotClient, ex, parameters.CancellationToken);
+                            HandleErrorAsync(parameters.BotClient, ex, parameters.CancellationToken);
                         }
                     }
                     break;
@@ -75,7 +75,7 @@ namespace MWBotApp.Logic
                             new InlineKeyboardMarkup(
                             InlineKeyboardButton.WithUrl($"View Administrator's Profile", Configuration.GetSection("Administrator:ProfileUrl")?.Value ?? string.Empty)
                             ));
-                        await HandleErrorAsync(parameters.BotClient, botError, parameters.CancellationToken);
+                        HandleErrorAsync(parameters.BotClient, botError, parameters.CancellationToken);
 
                     }
                     break;
