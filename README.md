@@ -56,7 +56,7 @@ The ```TelegramBotProcessor``` class handles the different requests sent in from
     }
 ```
 
-The ```StartMessageResponse``` called from a background thread and it looks like the one below.
+The ```StartMessageResponse``` is called from a background thread and it looks like the one below.
 
 ```
     //Starts messages response when a Telegram message is sent
